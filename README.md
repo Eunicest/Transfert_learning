@@ -1,72 +1,99 @@
 # 🐝 Fourmis vs. Abeilles : Apprentissage par Transfert (Vision par Ordinateur)
 
-## 🎯 Concepts et Résultats Clés
-*(Pour le détail de l'implémentation, consultez le notebook principal du projet).*
+> **Source :** ce projet reprend et commente le [tutoriel officiel PyTorch sur l'apprentissage par transfert](https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html). Les parties qui me sont propres sont indiquées ci-dessous.
 
-- **Lutter contre le manque de données :** Habituellement, entraîner un réseau de neurones profonds nécessite énormément de données. Ici, le défi est relevé avec un très petit jeu de données (environ 120 images d'entraînement et 75 de validation par classe) grâce à l'utilisation d'un modèle pré-entraîné (**ResNet18**, initialement entraîné sur ImageNet).
-- **Deux approches d'Apprentissage par Transfert :** Le projet démontre deux méthodes distinctes pour adapter l'IA :
-  - *Le réglage fin (Finetuning) :* Le réseau est initialisé avec les poids pré-entraînés, puis l'ensemble du réseau est réentraîné sur nos images de fourmis et d'abeilles.
-  - *L'extracteur de caractéristiques (Feature Extractor) :* Les poids de la quasi-totalité du réseau sont "gelés". Seule la dernière couche est remplacée et entraînée pour effectuer le choix final entre les 2 catégories.
-- **Augmentation des données (Data Augmentation) :** Utilisation de transformations (recadrage aléatoire, retournement horizontal) pour diversifier artificiellement les images d'entraînement et limiter le risque de surapprentissage (overfitting).
+## 🎯 Résultats
+
+Jeu de données : environ 120 images d'entraînement et 75 de validation par classe (fourmis / abeilles). Modèle : ResNet18 pré-entraîné sur ImageNet.
+
+| Approche | Accuracy (validation) | Remarques |
+| :--- | :---: | :--- |
+| Fine-tuning (tout le réseau réentraîné) | 0.9215 | [temps d'entraînement= 3min39s, nombre d'époques=25] |
+| Extracteur de caractéristiques (couches gelées, dernière couche entraînée) | 0.9803 | [temps d'entraînement = 1m44s, nombre d'époques = 25] |
+
+
+
+**Ce que j'ai observé :** Dans notre cas, l'accuracy des  deux approches semblent être du même ordre de grandeur. Mais, la best accuracy de feature extraction (méthode de la question 1) est meilleure que la best accuracy de fine tuning.
+De plus, la méthode feature extraction est plus rapide que la la méthode fine tuning dans notre cas.
+Cela peut peut-être s'expliquer par le fait que le fine tuning réajuste tous les paramètres du modèle.
 
 ---
 
-## 📝 Contexte du projet
-Ce projet est un tutoriel d'intelligence artificielle dédié à la vision par ordinateur (classification d'images). 
-L'objectif est d'entraîner un modèle informatique à faire la différence visuelle entre des **abeilles** et des **fourmis**, en illustrant l'efficacité du Transfer Learning lorsque les données sont limitées.
+## 📝 Contexte et concepts
 
-Le projet s'articule autour de :
-1. **La préparation des données :** Chargement, normalisation et augmentation des images d'entraînement.
-2. **La modélisation :** Importation du modèle ResNet18 et modification de sa couche finale (Fully Connected layer).
-3. **L'entraînement et l'évaluation :** Création de fonctions pour entraîner le modèle, calculer la précision et visualiser concrètement les prédictions sur un lot d'images.
+- **Peu de données :** entraîner un réseau profond demande beaucoup d'images. Ici, un modèle pré-entraîné (ResNet18) permet de travailler avec quelques centaines d'images.
+- **Deux approches comparées :** le *fine-tuning* (tous les poids sont réentraînés) et l'*extracteur de caractéristiques* (poids gelés, seule la dernière couche est remplacée et entraînée).
+- **Augmentation de données :** recadrage aléatoire et retournement horizontal pour limiter le surapprentissage.
 
-### 🛠️ Outils et Technologies
+
+### 🛠️ Outils et technologies
 - **Environnement :** Python, Jupyter Notebook / Colab
-- **Méthodes :** Transfer Learning, Réseaux de Neurones Convolutifs (CNN), Data Augmentation
-- **Packages clés :** `torch` (PyTorch), `torchvision`, `matplotlib`, `numpy`, `os`, `time`
+- **Méthodes :** transfer learning, réseaux de neurones convolutifs (CNN), data augmentation
+- **Packages clés :** `torch`, `torchvision`, `matplotlib`, `numpy`
 
-### 📂 Structure du dépôt
-- 📓 `transfer_learning_tutorial.ipynb` : Notebook interactif contenant l'ensemble du code, de l'exploration à l'évaluation.
-- 📁 `data/hymenoptera_data/` : Dossier prévu pour héberger le jeu de données (sous-dossiers `train` et `val` pour les classes `ants` et `bees`).
+### 📂 Contenu du dépôt
+- 📓 `Fourmis_vs_Abeilles_Transfert.ipynb` : notebook principal (préparation des données, modélisation, entraînement, évaluation, visualisation des prédictions).
 
-> ⚠️ **Note sur l'exécution :** Le code prépare les fonctions d'entraînement et de visualisation, mais vous devez exécuter les cellules du notebook dans votre propre environnement pour lancer l'entraînement effectif et obtenir la précision (accuracy) finale.
+> ⚠️ **Données :** le jeu de données (`hymenoptera_data`) n'est pas inclus. Il se télécharge via [le lien indiqué dans le tutoriel PyTorch]. Il doit être placé dans `data/hymenoptera_data/` (sous-dossiers `train` et `val`).
 
 ---
-<br>
+
+## ⚠️ Limites et pistes d'amélioration
+
+**Limites**
+- Jeu de données très petit : les résultats varient selon le découpage et la graine aléatoire.
+- Résultats obtenus sur une seule exécution
+
+**Pistes d'amélioration** : répéter les entraînements avec plusieurs graines, tester une autre architecture
+
+
+---
 
 <details>
-<summary>🇬🇧 <b>English version (Click to expand)</b></summary>
+<summary>🇬🇧 <b>English version</b></summary>
 
 # 🐝 Ants vs. Bees: Transfer Learning for Computer Vision
 
-## 🎯 Key Concepts & Takeaways
-*(For implementation details, please refer to the main project notebook).*
+> **Source:** this project reproduces and comments on the [official PyTorch transfer learning tutorial](https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html) . My own contributions are listed below.
 
-- **Overcoming Data Scarcity:** Training a deep neural network usually requires massive amounts of data. This project tackles a very small dataset (approx. 120 training images and 75 validation images per class) by using a pre-trained model (**ResNet18**, originally trained on ImageNet).
-- **Two Transfer Learning Approaches:** The project demonstrates two distinct methods to adapt the AI:
-  - *Finetuning the ConvNet:* The network is initialized with pre-trained weights, and then the entire network is trained on our new ants/bees dataset.
-  - *ConvNet as Fixed Feature Extractor:* The weights of almost the entire network are "frozen". Only the final fully connected layer is replaced and trained to output our 2 specific classes.
-- **Data Augmentation:** Application of techniques like random cropping and horizontal flipping to artificially increase the diversity of the training set and prevent overfitting.
+## 🎯 Results
 
----
+Dataset: about 120 training and 75 validation images per class (ants / bees). Model: ResNet18 pre-trained on ImageNet.
 
-## 📝 Project Context
-This project is a computer vision tutorial focused on image classification. 
-The objective is to train a machine learning model to visually distinguish between **bees** and **ants**, showcasing the power of Transfer Learning when working with limited data.
+| Approach | Validation accuracy | Notes |
+| :--- | :---: | :--- |
+| Fine-tuning (whole network retrained) | 0.9215 | [training time = 3min39, number of epochs = 25] |
+| Fixed feature extractor (frozen layers, last layer trained) | 0.9803 | [training time= 1min44, number of epochs = 25] |
 
-The project is structured around:
-1. **Data Preparation:** Loading, normalizing, and augmenting the training images.
-2. **Modeling:** Importing the ResNet18 model and modifying its final layer.
-3. **Training & Evaluation:** Building functions to train the model, calculate accuracy, and visualize predictions on a batch of test images.
+**What I observed:** In our case, the accuracy of both approaches seems to be of the same order of magnitude. But the best feature extraction accuracy (method of question 1) is better than the best fine tuning accuracy.
+Moreover, the feature extraction method is faster than the fine tuning method in our case.
+This can perhaps be explained by the fact that fine tuning readjusts all the model parameters.
 
-### 🛠️ Tools and Technologies
+## 📝 Context and concepts
+
+- **Small data:** training a deep network usually needs a lot of images; a pre-trained model (ResNet18) makes a few hundred images enough.
+- **Two approaches compared:** fine-tuning (all weights retrained) and fixed feature extractor (frozen weights, only the last layer replaced and trained).
+- **Data augmentation:** random cropping and horizontal flipping to limit overfitting.
+
+
+### 🛠️ Tools
 - **Environment:** Python, Jupyter Notebook / Colab
-- **Methods:** Transfer Learning, Convolutional Neural Networks (CNN), Data Augmentation
-- **Core Packages:** `torch` (PyTorch), `torchvision`, `matplotlib`, `numpy`, `os`, `time`
+- **Methods:** transfer learning, convolutional neural networks (CNN), data augmentation
+- **Key packages:** `torch`, `torchvision`, `matplotlib`, `numpy`
 
-### 📂 Repository Structure
-- 📓 `transfer_learning_tutorial.ipynb`: Interactive notebook containing all code, from data loading to evaluation.
-- 📁 `data/hymenoptera_data/`: Directory intended to host the dataset (with `train` and `val` subfolders for `ants` and `bees`).
+### 📂 Repository content
+- 📓 `Fourmis_vs_Abeilles_Transfert.ipynb`: main notebook (data preparation, modeling, training, evaluation, prediction visualization).
 
-> ⚠️ **Note on execution:** The notebook sets up the training and visualization functions, but you will need to run the cells in your own environment to actually train the model and see the final accuracy metrics.
+> ⚠️ **Data:** the dataset (`hymenoptera_data`) is not included. Download it from [the link given in the PyTorch tutorial] and place it in `data/hymenoptera_data/` (`train` and `val` subfolders).
+
+## ⚠️ Limitations and improvements
+
+**Limitations**
+- Very small dataset: results vary with the split and the random seed.
+- Results from a single run
+
+**Possible improvements**: repeat training with several seeds, try another architecture
+
+
+
 </details>
